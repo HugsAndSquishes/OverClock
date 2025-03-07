@@ -13,40 +13,43 @@ from pathlib import Path
 import os
 import environ
 env = environ.Env()
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Initialize environment variables
+
 env = environ.Env(
     DEBUG=(bool, False)
 )
-# Read the .env file from BASE_DIR
+
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 print("SECRET_KEY from .env:", env("SECRET_KEY", default="Not Found"))
 
 
-# SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = env("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = env("DEBUG", default=True)
 
 ALLOWED_HOSTS = []
 
-# Application definition
+
 
 INSTALLED_APPS = [
-    'overclockapp.apps.OverclockappConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'overclockapp',
+    'rest_framework',
+    'corsheaders',
 ]
 AUTH_USER_MODEL = 'overclockapp.User'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -88,7 +91,7 @@ DATABASES = {
     }
 }
 
-# Password validation
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -104,14 +107,19 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
+# CORS Settings
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React dev server
+]
+
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+
 STATIC_URL = 'static/'
 
-# Default primary key field type
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
