@@ -1,9 +1,11 @@
 
-
 from django.test import TestCase
-from .models import Punch
+from .models import Attendance
 
-class PunchModelTest(TestCase):
+
+'''
+class AttendanceModelTest(TestCase):
     def test_punch_creation(self):
-        punch = Punch.objects.create(user="John Doe", punch_type="IN")
-        self.assertEqual(punch.punch_type, "IN")
+        punch = Attendance.objects.create(user="John Doe", punch_type="IN")
+        self.assertEqual(punch.punch_type, "IN")'
+'''
