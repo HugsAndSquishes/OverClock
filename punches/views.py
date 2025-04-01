@@ -1,6 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Attendance
 from .forms import AttendanceForm
+from datetime import datetime
+
+
+    
+def admin_dashboard(request):
+    # brackets can be used to pass information to the template
+    return render(request, 'punches/admin_dashboard.html', {})
 
 def attendance_list(request):
     attendances = Attendance.objects.all()
