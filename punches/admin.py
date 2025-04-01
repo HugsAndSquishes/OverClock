@@ -13,10 +13,19 @@ class AttendanceAdmin(admin.ModelAdmin):
         return obj.user.last_name + ", " + obj.user.first_name
 
 
-class AttendanceInline(admin.StackedInline):
+class AttendanceInline(admin.TabularInline):
     model = models.Attendance
     can_delete = False
-    verbose_name_plural = "Attendances"
+    verbose_name_plural = "Attendance"
+    extra = 0
+
+class LeaderboardAdmin(admin.ModelAdmin):
+    list_display = ('rank', 'get_employee_name')
+
+    @admin.display(description='Author Name', ordering='author__name')
+    def get_employee_name(self, obj):
+        return obj.user.last_name + ", " + obj.user.first_name
+
 
 class UserAdmin(BaseUserAdmin):
     list_display = ('last_name', 'first_name',)
@@ -24,5 +33,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(models.Attendance, AttendanceAdmin) 
+admin.site.register(models.Leaderboard, LeaderboardAdmin) 
+
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
