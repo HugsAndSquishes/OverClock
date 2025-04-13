@@ -1,85 +1,131 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
-import { FaBars } from "react-icons/fa";
+import { BsBell, BsChevronDown, BsList, BsX } from "react-icons/bs";
 
-const Nav = styled.nav`
-  background: #1e1e1e;
-  padding: 1rem 2rem;
-  color: #fafafa;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-`;
+const Navbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-const MenuIcon = styled(FaBars)`
-  display: none;
-  font-size: 1.75rem;
-  cursor: pointer;
-  transition: transform 0.3s ease-in-out;
-
-  &:hover {
-    transform: scale(1.1);
-  }
-
-  @media (max-width: 768px) {
-    display: block;
-  }
-`;
-
-const NavMenu = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-
-  @media (max-width: 768px) {
-    display: ${props => (props.open ? 'flex' : 'none')};
-    flex-direction: column;
-    background: #1e1e1e;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  }
-`;
-
-const NavItem = styled(Link)`
-  color: #fafafa;
-  text-decoration: none;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  transition: background 0.3s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-`;
-
-const NavBar = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
-
-  const toggleMenu = () => setMenuOpen(prev => !prev);
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <Nav>
-      <NavItem to="/">Home</NavItem>
+    <header className="bg-gray-800 border-b border-gray-600">
+      <div className="px-4 md:px-8 py-4">
+        <div className="flex items-center justify-between max-w-[1400px] mx-auto">
+          {/* Logo and Brand */}
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold text-gray-100 tracking-wider">
+              <span className="text-[#c98c52]">Over</span>Clock
+            </h1>
+          </div>
 
-      <MenuIcon onClick={toggleMenu} />
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-10">
+            <Link 
+              to="/" 
+              className="text-gray-300 hover:text-gray-100 font-medium relative group transition-colors"
+            >
+              Punch
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+            </Link>
+            <Link
+              to="/Leaderboard"
+              className="text-gray-300 hover:text-gray-100 relative group transition-colors"
+            >
+              Leaderboard
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+            </Link>
+            <Link
+              to="/Teams"
+              className="text-gray-300 hover:text-gray-100 relative group transition-colors"
+            >
+              Team
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+            </Link>
+            <Link
+              to="/AdjustPunch"
+              className="text-gray-300 hover:text-gray-100 relative group transition-colors"
+            >
+              Adjust Punches
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+            </Link>
+            <Link
+              to="/AttendanceHistory"
+              className="text-gray-300 hover:text-gray-100 relative group transition-colors"
+            >
+              Attendance History
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+            </Link>
+          </nav>
 
-      <NavMenu open={menuOpen}>
-        <NavItem to="/Leaderboard" onClick={() => setMenuOpen(false)}>Leaderboard</NavItem>
-        <NavItem to="/Teams" onClick={() => setMenuOpen(false)}>Teams</NavItem>
-        <NavItem to="/AdjustPunch" onClick={() => setMenuOpen(false)}>Adjust Punch</NavItem>
-        <NavItem to="/AttendanceHistory" onClick={() => setMenuOpen(false)}>Attendance History</NavItem>
-        <NavItem to="/UserSettings" onClick={() => setMenuOpen(false)}>Settings</NavItem>
-      </NavMenu>
-    </Nav>
+          {/* User Controls */}
+          <div className="flex items-center space-x-4 md:space-x-8">
+            <div className="flex items-center space-x-3 cursor-pointer group">
+              <span className="hidden md:inline text-gray-300 group-hover:text-gray-100 transition-colors">
+              
+              </span>
+              <BsChevronDown className="hidden md:inline text-gray-300 group-hover:text-gray-100 transition-colors" />
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden text-gray-300 hover:text-gray-100 p-2"
+              onClick={toggleMenu}
+            >
+              {isMenuOpen ? <BsX size={24} /> : <BsList size={24} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <nav className="md:hidden pt-4 pb-6 px-4 border-t border-gray-600">
+            <div className="flex flex-col space-y-4">
+              <Link 
+                to="/" 
+                className="text-[#c98c52] font-medium relative group"
+                onClick={toggleMenu}
+              >
+                Punch
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+              </Link>
+              <Link
+                to="/Leaderboard"
+                className="text-gray-300 hover:text-gray-100 transition-colors relative group"
+                onClick={toggleMenu}
+              >
+                Leaderboard
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+              </Link>
+              <Link
+                to="/Teams"
+                className="text-gray-300 hover:text-gray-100 transition-colors relative group"
+                onClick={toggleMenu}
+              >
+                Teams
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-100 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+              </Link>
+              <Link
+                to="/AdjustPunch"
+                className="text-gray-300 hover:text-gray-100 transition-colors relative group"
+                onClick={toggleMenu}
+              >
+              Adjust Punches
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-100 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+              </Link>
+              <Link
+                to="/AttendanceHistory"
+                className="text-gray-300 hover:text-gray-100 transition-colors relative group"
+                onClick={toggleMenu}
+              >
+                Attendance History
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-100 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
+              </Link>
+            </div>
+          </nav>
+        )}
+      </div>
+    </header>
   );
 };
 
-export default NavBar;
+export default Navbar;
