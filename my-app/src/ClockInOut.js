@@ -13,22 +13,57 @@ export default function ClockInOut() {
     return Math.round((diff / (1000 * 60 * 60)) * 100) / 100; // Round to 2 decimal places
   };
 
-  const handleClock = () => {
+  const handleClock = async () => {
     const currentTime = new Date();
+    const isoTime = currentTime.toISOString();
+  
     setIsClockedIn(!isClockedIn);
     setTimestamp(currentTime.toLocaleTimeString());
-    
+  
     if (!isClockedIn) {
       // Clocking In
       setClockInTime(currentTime);
+      const res = await fetch("http://127.0.0.1:8000/api/clock/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "clock_in",
+          timestamp: isoTime,
+          employee_name: "Mekhel Powell"  // customize as needed
+        })
+      });
+      const data = await res.json();
+      localStorage.setItem("clockRecordId", data.id);
     } else {
       // Clocking Out
       const hoursWorked = calculateHours(clockInTime, currentTime);
       setTotalHours(prev => prev + hoursWorked);
       setTodayHours(prev => prev + hoursWorked);
       setClockInTime(null);
+  
+      const res = await fetch("http://127.0.0.1:8000/api/clock/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "clock_out",
+          timestamp: isoTime,
+          id: localStorage.getItem("clockRecordId"),
+          employee_name: localStorage.getItem("employeeName") || "Mekhel Powell"
+          
+        })
+      });
+      const data = await res.json();
+      if (data.hours !== undefined) {
+        console.log("Clocked out. Total hours:", data.hours);
+        // Update the total hours with the server-calculated value
+        setTotalHours(prev => prev + data.hours);
+        setTodayHours(prev => prev + data.hours);
+      } else {
+        console.error("Hours not returned from server:", data);
+      }
     }
   };
+  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-800 to-gray-900">
