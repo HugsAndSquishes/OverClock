@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { BsChevronDown, BsList, BsX } from "react-icons/bs";
+import { BsList, BsX } from "react-icons/bs";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -42,13 +42,6 @@ const Navbar = () => {
               <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
             </Link>
             <Link
-              to="/AdjustPunch"
-              className="text-gray-300 hover:text-gray-100 relative group transition-colors"
-            >
-              Adjust Punches
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
-            </Link>
-            <Link
               to="/AttendanceHistory"
               className="text-gray-300 hover:text-gray-100 relative group transition-colors"
             >
@@ -57,16 +50,8 @@ const Navbar = () => {
             </Link>
           </nav>
 
-          {/* User Controls */}
-          <div className="flex items-center space-x-4 md:space-x-8">
-            <div className="flex items-center space-x-3 cursor-pointer group">
-              <span className="hidden md:inline text-gray-300 group-hover:text-gray-100 transition-colors">
-              
-              </span>
-              <BsChevronDown className="hidden md:inline text-gray-300 group-hover:text-gray-100 transition-colors" />
-            </div>
-
-            {/* Mobile Menu Button */}
+          {/* Mobile Menu Button */}
+          <div className="flex items-center">
             <button
               className="md:hidden text-gray-300 hover:text-gray-100 p-2"
               onClick={toggleMenu}
@@ -106,14 +91,6 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/AdjustPunch"
-                className="text-gray-300 hover:text-gray-100 transition-colors relative group"
-                onClick={toggleMenu}
-              >
-              Adjust Punches
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-100 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
-              </Link>
-              <Link
-                to="/AttendanceHistory"
                 className="text-gray-300 hover:text-gray-100 transition-colors relative group"
                 onClick={toggleMenu}
               >
