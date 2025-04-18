@@ -1,7 +1,10 @@
 import React from "react";
+import ManagerHistoryCalendar from "../components/ ManagerHistoryCalendar";
+
 const AttendanceHistory = () => {
 return(
-    <h2>Attendance History</h2>
-)
-};
+    <div>
+        <ManagerHistoryCalendar/>
+    </div>
+)};
 export default AttendanceHistory;
