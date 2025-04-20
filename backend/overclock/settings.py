@@ -37,7 +37,9 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+
 INSTALLED_APPS = [
+    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,10 +47,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    #apps
-    'punches',
-    'payroll',
+    # add apps heree
+    'api.apps.ApiConfig',
+    'rest_framework',
+    'corsheaders',
+    
 ]
+AUTH_USER_MODEL = 'api.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -58,6 +63,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React frontend
 ]
 
 ROOT_URLCONF = 'overclock.urls'
@@ -65,7 +76,7 @@ ROOT_URLCONF = 'overclock.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'custom_admin/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -90,11 +101,10 @@ DATABASES = {
         'NAME': env("DB_NAME"),
         'USER': env("DB_USER"),
         'PASSWORD': env("DB_PASSWORD"),
-        'HOST': env("DB_HOST"),
-        'PORT': env("DB_PORT"),
+        'HOST': 'localhost',
+        'PORT': 5432,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
