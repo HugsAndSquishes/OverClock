@@ -1,71 +1,8 @@
-# ===================
-# PYTHON / DJANGO
-# ===================
-__pycache__/
-*.py[cod]
-*.sqlite3
-*.log
-*.pot
 *.pyc
-
-# Django media/static/temp files
-media/
-staticfiles/
-*.pid
-
-# Virtual environments
-env/
-venv/
-ENV/
+__pycache__
+db.sqlite3
+/env
+/punches/migrations
 *.env
-*.env.*
-
-# ===================
-# DATABASE (PostgreSQL)
-# ===================
-*.pgsql
-*.db
-*.sql
-*.dump
-
-# ===================
-# NODE / REACT
-# ===================
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-lock.yaml
-package-lock.json
-.next/
-build/
-dist/
-out/
-coverage/
-.DS_Store
-
-# Next.js/CRA static exports and local caches
-.next/
-.cache/
-.eslintcache
-
-# ===================
-# OS / IDE / TOOLING
-# ===================
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# VSCode / PyCharm / JetBrains
-.vscode/
-.idea/
-
-# Test coverage
-htmlcov/
-coverage/
-
-# System files
-Thumbs.db
-ehthumbs.db
-Desktop.ini
+/venv
+.vscode

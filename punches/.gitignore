@@ -1,0 +1,15 @@
+# Ignore Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore virtual environment
+venv/
+env/
+
+# Ignore database files
+db.sqlite3
+
+# Ignore VS Code settings
+.vscode/

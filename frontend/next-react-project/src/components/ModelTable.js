@@ -23,13 +23,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function ModelTable({
   modelName,
-  columns = [],      
-  apiUrl,            
-  editUrlPrefix,     
-  pageSize = 10,     
-  title = null,      
-  filterField = '',  
+  columns = [],       // Add default empty array for columns
+  apiUrl,            // Base API URL for fetching/manipulating data
+  addUrl,            // URL for adding new instances
+  editUrlPrefix,     // Prefix for edit URLs (will append ID)
+  pageSize = 10,     // Default page size
+  title = null,      // Custom title (optional)
+  filterField = '',  // Field to filter by (optional)
 }) {
+    //console.log(`YOU HAVE ${apiUrl}`)
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,7 +47,7 @@ export default function ModelTable({
 
   const router = useRouter();
 
-
+  // Prepare action column with edit/delete buttons
   //console.log(`${editUrlPrefix}`);
   //console.log(`${params.row.id}`);
   const actionColumn = {
@@ -77,18 +79,22 @@ export default function ModelTable({
     ),
   };
 
+  // Combine provided columns with action column - safely handle undefined columns
   const allColumns = [...(columns || []), actionColumn];
 
+  // Fetch data with pagination and optional filtering
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
+        // Build query parameters for pagination and filtering
         const params = new URLSearchParams({
-          page: paginationModel.page + 1, 
+          page: paginationModel.page + 1, // API typically uses 1-based indexing
           page_size: paginationModel.pageSize,
         });
         
+        // Add filter parameter if provided
         if (filterField && filterValue) {
           params.append(filterField, filterValue);
         }
@@ -101,6 +107,7 @@ export default function ModelTable({
         
         const responseData = await res.json();
         
+        // Handle both array responses and paginated responses
         if (Array.isArray(responseData)) {
           setData(responseData);
           setTotalRows(responseData.length);
