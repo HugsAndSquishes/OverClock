@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react';
 import { UserCheck, UserMinus, Clock } from 'lucide-react';
-
-const API_TEAM_ENDPOINT = process.env.REACT_APP_API_URL
-  ? `${process.env.REACT_APP_API_URL}/api/team/`
-  : "http://127.0.0.1:8000/api/team/";
+import { apiFetch, ENDPOINTS } from '../utils/api';
 
 export default function TeamDashboard() {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -11,9 +8,29 @@ export default function TeamDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetch(API_TEAM_ENDPOINT)
-      .then(res => res.json())
-      .then(data => setTeamMembers(data))
+    // Use apiFetch instead of direct fetch
+    apiFetch(ENDPOINTS.TEAM)
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        // Your existing logic to process team data
+        if (Array.isArray(data) && data.length > 0) {
+          const teamMembers = data[0].members.map(member => ({
+            id: member.id || Math.random().toString(),
+            name: member.username || "Unknown",
+            role: "Team Member",
+            online: Math.random() > 0.5,
+            attendanceTime: { start: "9:00 AM", end: "5:00 PM" }
+          }));
+          setTeamMembers(teamMembers);
+        } else {
+          setTeamMembers([]);
+        }
+      })
       .catch(err => console.error(err));
   }, []);
 

@@ -1,5 +1,13 @@
 from rest_framework import serializers
-from .models import ClockRecord, AttendanceHistory
+from .models import ClockRecord, AttendanceHistory, Team
+from django.contrib.auth.models import User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['username']
+
 
 class ClockRecordSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,3 +23,9 @@ class AttendanceSerializer(serializers.ModelSerializer):
 class LeaderboardSerializer(serializers.Serializer):
     employee_name = serializers.CharField()
     total_hours = serializers.FloatField()
+
+
+class TeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Team
+        fields = '__all__'

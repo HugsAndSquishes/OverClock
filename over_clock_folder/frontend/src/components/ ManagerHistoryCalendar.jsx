@@ -1,23 +1,20 @@
-// over_clock_folder/frontend/src/components/ManagerHistoryCalendar.jsx
 import React, { useEffect, useState } from "react";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import "./ManagerHistoryCalendar.css"; // Import custom CSS
+import "./ManagerHistoryCalendar.css";
+import { apiFetch, ENDPOINTS } from "../utils/api";
 
 const localizer = momentLocalizer(moment);
-// Use the correct API endpoint from your urls.py
-const API_HISTORY_ENDPOINT = process.env.REACT_APP_API_URL ? `${process.env.REACT_APP_API_URL}/api/history/` : "http://127.0.0.1:8000/api/history/";
-
 
 export default function ManagerHistoryCalendar() {
   const [events, setEvents] = useState([]);
-  const [workedDates, setWorkedDates] = useState(new Set()); // Store dates with work entries
+  const [workedDates, setWorkedDates] = useState(new Set());
   const [currentDate, setCurrentDate] = useState(new Date());
 
   useEffect(() => {
-    // Fetch history for ALL employees by removing the employee_name query param
-    fetch(API_HISTORY_ENDPOINT)
+    // Use apiFetch instead of direct fetch
+    apiFetch(ENDPOINTS.HISTORY)
       .then((res) => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);

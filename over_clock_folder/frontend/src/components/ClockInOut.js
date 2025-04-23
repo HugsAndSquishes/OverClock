@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { apiFetch, ENDPOINTS } from "../utils/api";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
-const API_CLOCK_ENDPOINT = `${API_BASE_URL}/api/clock/`;
-const EMPLOYEE_NAME = localStorage.getItem("employeeName") || "Mekhel Powell";
+// REMOVE these redundant constants - they're already defined in the api.js utility
+// const API_BASE_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
+// const API_CLOCK_ENDPOINT = `${API_BASE_URL}/api/clock/`;
 
 export default function ClockInOut() {
+  // State definitions remain the same
+  const [employeeName, setEmployeeName] = useState(localStorage.getItem("username") || "Guest");
   const [isClockedIn, setIsClockedIn] = useState(false);
   const [timestamp, setTimestamp] = useState(null);
   const [todayHours, setTodayHours] = useState(0);
@@ -14,7 +17,14 @@ export default function ClockInOut() {
   const [error, setError] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Update current time every second
+  // useEffect hooks remain the same
+  useEffect(() => {
+    const currentUsername = localStorage.getItem("username") || "Guest";
+    if (currentUsername !== employeeName) {
+        setEmployeeName(currentUsername);
+    }
+  }, [employeeName]);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -31,22 +41,26 @@ export default function ClockInOut() {
     const action = isClockedIn ? "clock_out" : "clock_in";
     let recordId = isClockedIn ? localStorage.getItem("clockRecordId") : null;
 
-    const fetchOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: action,
-        timestamp: isoTime,
-        employee_name: EMPLOYEE_NAME,
-        id: recordId,
-      }),
-    };
-
     try {
-      const res = await fetch(API_CLOCK_ENDPOINT, fetchOptions);
+      // UPDATED: Use apiFetch utility instead of direct fetch
+      const res = await apiFetch(ENDPOINTS.CLOCK, {
+        method: "POST",
+        body: JSON.stringify({
+          action: action,
+          timestamp: isoTime,
+          employee_name: employeeName,
+          id: recordId,
+        }),
+      });
 
+      // Rest of the function remains the same
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
+        if (res.status === 401) {
+          setError("Authentication failed. Please log in again.");
+        } else {
+          setError(errorData.error || `HTTP error! status: ${res.status}`);
+        }
         throw new Error(errorData.error || `HTTP error! status: ${res.status}`);
       }
 
@@ -66,13 +80,15 @@ export default function ClockInOut() {
         }
       }
     } catch (err) {
-      console.error("Error during clock action:", err);
-      setError(err.message || "An unexpected error occurred.");
+      // Error handling remains the same
+      if (!error && err.message !== "Authentication failed. Please log in again.") {
+        console.error("Error during clock action:", err);
+        setError(err.message || "An unexpected error occurred.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 p-4">
       <div className="max-w-6xl mx-auto">
@@ -81,9 +97,11 @@ export default function ClockInOut() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div>
               <h1 className="text-2xl font-bold text-gray-100">Employee Dashboard</h1>
-              <p className="text-gray-300">Welcome, {EMPLOYEE_NAME}</p>
+              {/* Use state variable for display */}
+              <p className="text-gray-300">Welcome, {employeeName}</p>
             </div>
-            <div className="mt-4 md:mt-0 text-center md:text-right">
+            {/* ... rest of the header ... */}
+             <div className="mt-4 md:mt-0 text-center md:text-right">
               <p className="text-sm text-gray-400">Current Time</p>
               <p className="text-xl font-medium text-gray-100">
                 {currentTime.toLocaleTimeString()}
@@ -95,7 +113,8 @@ export default function ClockInOut() {
           </div>
         </header>
 
-        {/* Main Content */}
+        {/* ... rest of the component, ensure credentials: 'include' is in handleClock fetch ... */}
+         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Clock In/Out Card */}
           <div className="lg:col-span-2 bg-gray-700 rounded-xl shadow-lg border border-gray-600 p-6">
@@ -133,8 +152,8 @@ export default function ClockInOut() {
                 className={`w-full max-w-xs py-4 px-6 text-lg font-semibold rounded-xl transition-all duration-300 ${
                   isLoading
                     ? "bg-gray-600 text-gray-300 cursor-not-allowed"
-                    : isClockedIn 
-                    ? "bg-red-600 hover:bg-red-700 text-white" 
+                    : isClockedIn
+                    ? "bg-red-600 hover:bg-red-700 text-white"
                     : "bg-green-600 hover:bg-green-700 text-white"
                 }`}
               >
@@ -179,8 +198,8 @@ export default function ClockInOut() {
                   <span>8h</span>
                 </div>
                 <div className="w-full bg-gray-600 rounded-full h-2">
-                  <div 
-                    className="bg-blue-500 h-2 rounded-full" 
+                  <div
+                    className="bg-blue-500 h-2 rounded-full"
                     style={{ width: `${Math.min((todayHours / 8) * 100, 100)}%` }}
                   ></div>
                 </div>
@@ -207,8 +226,8 @@ export default function ClockInOut() {
                   <span>40h</span>
                 </div>
                 <div className="w-full bg-gray-600 rounded-full h-2">
-                  <div 
-                    className="bg-purple-500 h-2 rounded-full" 
+                  <div
+                    className="bg-purple-500 h-2 rounded-full"
                     style={{ width: `${Math.min((weeklyHours / 40) * 100, 100)}%` }}
                   ></div>
                 </div>

@@ -1,15 +1,15 @@
 from django.db import models
 from datetime import date
 from django.db.models import Sum
-
+from django.contrib.auth.models import User
 
 class ClockRecord(models.Model):
-    employee_name = models.CharField(max_length=100)  # optional if you want to track names
+    employee_name = models.CharField(max_length=100)
     clock_in_time = models.DateTimeField(null=True, blank=True)
     clock_out_time = models.DateTimeField(null=True, blank=True)
-    day = models.DateField(default=date.today)  # Automatically set the date when the record is created
+    day = models.DateField(default=date.today)
 
-    def __str__(self):  # Changed from def str(self):
+    def __str__(self):
         return f"{self.employee_name or 'User'} - {self.clock_in_time} to {self.clock_out_time}"
     
     @staticmethod
@@ -30,13 +30,18 @@ class ClockRecord(models.Model):
                 'employee_name': entry['employee_name'],
                 'total_hours': round(hours, 2)
             })
-
         return results
-    
+
 class AttendanceHistory(models.Model):
-    # A foreign key to the ClockRecord model. This will allow you to access all the fields from ClockRecord.
     clock_record = models.ForeignKey('ClockRecord', on_delete=models.CASCADE)
 
     def __str__(self):
-        # Using the __str__ method of ClockRecord to display the record details.
         return str(self.clock_record)
+
+
+class Team(models.Model):
+    name = models.CharField(max_length=100)
+    members = models.ManyToManyField(User)
+
+    def __str__(self):
+        return self.name

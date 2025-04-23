@@ -1,11 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BsList, BsX } from "react-icons/bs";
+import { apiFetch, ENDPOINTS } from "../utils/api";
 
-const Navbar = () => {
+const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [username, setUsername] = useState("");
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  useEffect(() => {
+    // Use apiFetch utility instead of direct fetch
+    apiFetch(ENDPOINTS.AUTHENTICATED)
+      .then((res) => {
+        if (!res.ok) throw new Error("Not authenticated");
+        return res.json();
+      })
+      .then((data) => {
+        setUsername(data.username);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
 
   return (
     <header className="bg-gray-800 border-b border-gray-600">
@@ -16,6 +33,9 @@ const Navbar = () => {
             <h1 className="text-2xl font-bold text-gray-100 tracking-wider">
               <span className="text-[#c98c52]">Over</span>Clock
             </h1>
+            {username && (
+              <span className="ml-4 text-gray-300">Welcome, {username}!</span>
+            )}
           </div>
 
           {/* Desktop Navigation */}
@@ -25,28 +45,24 @@ const Navbar = () => {
               className="text-gray-300 hover:text-gray-100 font-medium relative group transition-colors"
             >
               Punch
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
             </Link>
             <Link
-              to="/Leaderboard"
+              to="/leaderboard"
               className="text-gray-300 hover:text-gray-100 relative group transition-colors"
             >
               Leaderboard
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
             </Link>
             <Link
-              to="/Teams"
+              to="/teams"
               className="text-gray-300 hover:text-gray-100 relative group transition-colors"
             >
               Team
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
             </Link>
             <Link
-              to="/AttendanceHistory"
+              to="/attendancehistory"
               className="text-gray-300 hover:text-gray-100 relative group transition-colors"
             >
               Attendance History
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
             </Link>
           </nav>
 
@@ -71,31 +87,27 @@ const Navbar = () => {
                 onClick={toggleMenu}
               >
                 Punch
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
               </Link>
               <Link
-                to="/Leaderboard"
+                to="/leaderboard"
                 className="text-gray-300 hover:text-gray-100 transition-colors relative group"
                 onClick={toggleMenu}
               >
                 Leaderboard
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#c98c52] transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
               </Link>
               <Link
-                to="/Teams"
+                to="/teams"
                 className="text-gray-300 hover:text-gray-100 transition-colors relative group"
                 onClick={toggleMenu}
               >
                 Teams
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-100 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
               </Link>
               <Link
-                to="/AdjustPunch"
+                to="/attendancehistory"
                 className="text-gray-300 hover:text-gray-100 transition-colors relative group"
                 onClick={toggleMenu}
               >
                 Attendance History
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-100 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
               </Link>
             </div>
           </nav>
@@ -105,4 +117,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default NavBar;

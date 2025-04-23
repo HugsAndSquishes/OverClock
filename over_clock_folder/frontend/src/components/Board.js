@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
-// Define your API endpoint
-const API_LEADERBOARD_ENDPOINT = process.env.REACT_APP_API_URL
-  ? `${process.env.REACT_APP_API_URL}/api/leaderboard/`
-  : "http://127.0.0.1:8000/api/leaderboard/";
+import { apiFetch, ENDPOINTS } from '../utils/api';
 
 const Board = () => {
   const [boardData, setBoardData] = useState([]);
@@ -11,9 +7,12 @@ const Board = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(API_LEADERBOARD_ENDPOINT)
+    // Use apiFetch instead of direct fetch
+    apiFetch(ENDPOINTS.LEADERBOARD)
       .then(res => {
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
         return res.json();
       })
       .then(data => {
@@ -25,7 +24,6 @@ const Board = () => {
         setLoading(false);
       });
   }, []);
-
   return (
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-800 to-gray-900">
       <div className="p-8 w-full max-w-2xl mx-4 bg-gray-700 rounded-2xl shadow-xl border border-gray-600">
