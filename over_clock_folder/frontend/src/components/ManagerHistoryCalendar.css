@@ -1,0 +1,36 @@
+/* over_clock_folder/frontend/src/components/ManagerHistoryCalendar.css */
+
+/* Style for day cells where someone worked */
+.rbc-day-bg.worked-day {
+    background-color: lightgreen !important; /* Use !important to override default styles if necessary */
+    /* Or use a hex code like #90ee90 */
+  }
+  
+  /* Optional: Style for the actual event block text (employee names) */
+  .rbc-event {
+    background-color: #a37a4f; /* Custom background for the event block */
+    color: white;           /* Text color for the event block */
+    border: none;
+    font-size: 0.8em;
+    padding: 2px 4px;
+  }
+  
+  /* Optional: Improve contrast for date numbers on worked days */
+  .rbc-day-bg.worked-day + .rbc-row-content .rbc-date-cell .rbc-button-link {
+      /* color: #333; */ /* Darker color for the date number if needed */
+  }
+  
+  /* Ensure default calendar text (like month headers) is visible */
+  .rbc-toolbar button,
+  .rbc-toolbar span {
+      color: white; /* Or match your theme */
+  }
+  .rbc-header {
+      color: #eee; /* Day names (Sun, Mon, etc.) */
+  }
+  .rbc-off-range-bg {
+      background-color: rgba(128, 128, 128, 0.1); /* Slightly dim days outside the current month */
+  }
+  .rbc-today {
+    background-color: rgba(49, 130, 206, 0.3); /* Highlight today's date subtly */
+  }

@@ -1,11 +1,12 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import manager_overview, UserViewSet
+from .views import attendance_history, leaderboard_view, clock_action
 
-router = DefaultRouter()
-router.register(r'users', UserViewSet)
+router=DefaultRouter()
 
 urlpatterns = [
-    path('manager/overview/', manager_overview, name='manager-overview'),
-    path('', include(router.urls)),
+    path('clock/', clock_action, name='clock_action'),
+    path('history/', attendance_history),
+    path('leaderboard/', leaderboard_view),
 ]
+ 

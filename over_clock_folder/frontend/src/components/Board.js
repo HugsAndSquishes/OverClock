@@ -1,116 +1,64 @@
 import React, { useState, useEffect } from 'react';
 
+// Define your API endpoint
+const API_LEADERBOARD_ENDPOINT = process.env.REACT_APP_API_URL
+  ? `${process.env.REACT_APP_API_URL}/api/leaderboard/`
+  : "http://127.0.0.1:8000/api/leaderboard/";
+
 const Board = () => {
-    const [activeTab, setActiveTab] = useState('daily');
-    const [BoardData, setBoardData] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [boardData, setBoardData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    // Fake Data to populate the table until the API is ready
-    const sampleData = {
-        daily: [
-            { id: 1, name: 'Alex Johnson', score: 2340, avatar: '/api/placeholder/40/40' },
-            { id: 2, name: 'Sarah Williams', score: 2210, avatar: '/api/placeholder/40/40' },
-            { id: 3, name: 'Michael Brown', score: 1950, avatar: '/api/placeholder/40/40' },
-            { id: 4, name: 'Emma Davis', score: 1820, avatar: '/api/placeholder/40/40' },
-            { id: 5, name: 'James Wilson', score: 1760, avatar: '/api/placeholder/40/40' },
-        ],
-        weekly: [
-            { id: 2, name: 'Sarah Williams', score: 9540, avatar: '/api/placeholder/40/40' },
-            { id: 1, name: 'Alex Johnson', score: 8970, avatar: '/api/placeholder/40/40' },
-            { id: 5, name: 'James Wilson', score: 7650, avatar: '/api/placeholder/40/40' },
-            { id: 3, name: 'Michael Brown', score: 7320, avatar: '/api/placeholder/40/40' },
-            { id: 7, name: 'Olivia Martin', score: 6980, avatar: '/api/placeholder/40/40' },
-        ],
-        monthly: [
-            { id: 5, name: 'James Wilson', score: 32450, avatar: '/api/placeholder/40/40' },
-            { id: 2, name: 'Sarah Williams', score: 30120, avatar: '/api/placeholder/40/40' },
-            { id: 7, name: 'Olivia Martin', score: 28760, avatar: '/api/placeholder/40/40' },
-            { id: 1, name: 'Alex Johnson', score: 26540, avatar: '/api/placeholder/40/40' },
-            { id: 9, name: 'Robert Taylor', score: 24890, avatar: '/api/placeholder/40/40' },
-        ],
-        quarterly: [
-            { id: 7, name: 'Olivia Martin', score: 89730, avatar: '/api/placeholder/40/40' },
-            { id: 5, name: 'James Wilson', score: 87650, avatar: '/api/placeholder/40/40' },
-            { id: 9, name: 'Robert Taylor', score: 82340, avatar: '/api/placeholder/40/40' },
-            { id: 2, name: 'Sarah Williams', score: 78920, avatar: '/api/placeholder/40/40' },
-            { id: 11, name: 'David Anderson', score: 76450, avatar: '/api/placeholder/40/40' },
-        ]
-    };
+  useEffect(() => {
+    setLoading(true);
+    fetch(API_LEADERBOARD_ENDPOINT)
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        setBoardData(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Fetch error:", err);
+        setLoading(false);
+      });
+  }, []);
 
-    // Simulate data fetching
-    useEffect(() => {
-        setLoading(true);
-        // Simulate API call with setTimeout
-        const timer = setTimeout(() => {
-            setBoardData(sampleData[activeTab]);
-            setLoading(false);
-        }, 600);
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-800 to-gray-900">
+      <div className="p-8 w-full max-w-2xl mx-4 bg-gray-700 rounded-2xl shadow-xl border border-gray-600">
+        <h2 className="text-3xl font-bold text-gray-100 mb-6 text-center">Leaderboard</h2>
 
-        return () => clearTimeout(timer);
-    }, [activeTab]);
-
-    const formatScore = (score) => {
-        return new Intl.NumberFormat().format(score);
-    };
-
-    const tabs = [
-        { id: 'daily', label: 'Daily' },
-        { id: 'weekly', label: 'Weekly' },
-        { id: 'monthly', label: 'Monthly' },
-        { id: 'quarterly', label: 'Quarterly' }
-    ];
-
-    return (
-        <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-gray-800 to-gray-900">
-            <div className="p-8 w-full max-w-2xl mx-4 bg-gray-700 rounded-2xl shadow-xl border border-gray-600">
-                <h2 className="text-3xl font-bold text-gray-100 mb-6 text-center">Leaderboard</h2>
-                
-                <div className="flex justify-center gap-2 mb-8">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            className={`px-4 py-2 rounded-xl border transition-all ${
-                                activeTab === tab.id 
-                                    ? 'bg-gray-800 border-gray-600 text-white' 
-                                    : 'border-gray-600 text-gray-400 hover:bg-gray-800'
-                            }`}
-                            onClick={() => setActiveTab(tab.id)}
-                        >
-                            {tab.label}
-                        </button>
-                    ))}
+        <div className="space-y-4">
+          {loading ? (
+            <p className="text-gray-300 text-center">Loading...</p>
+          ) : (
+            boardData.map((user, index) => (
+              <div
+                key={user.employee_name}
+                className="flex items-center justify-between p-4 bg-gray-800 rounded-xl border border-gray-600"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="size-12 rounded-full bg-gray-600 flex items-center justify-center text-white font-bold">
+                    {user.employee_name.charAt(0)}
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-100">{user.employee_name}</h4>
+                    <p className="text-gray-400">{user.total_hours.toFixed(2)} hrs</p>
+                  </div>
                 </div>
-
-                <div className="space-y-4">
-                    {loading ? (
-                        <p className="text-gray-300 text-center">Loading...</p>
-                    ) : (
-                        BoardData.map((user, index) => (
-                            <div 
-                                key={user.id} 
-                                className="flex items-center justify-between p-4 bg-gray-800 rounded-xl border border-gray-600"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <img 
-                                        src={user.avatar} 
-                                        alt="avatar" 
-                                        className="size-12 rounded-full bg-gray-600"
-                                    />
-                                    <div>
-                                        <h4 className="text-lg font-semibold text-gray-100">{user.name}</h4>
-                                        <p className="text-gray-400">{formatScore(user.score)} pts</p>
-                                    </div>
-                                </div>
-                                <span className="text-xl font-semibold text-gray-100">
-                                    #{index + 1}
-                                </span>
-                            </div>
-                        ))
-                    )}
-                </div>
-            </div>
+                <span className="text-xl font-semibold text-gray-100">
+                  #{index + 1}
+                </span>
+              </div>
+            ))
+          )}
         </div>
-    );    
+      </div>
+    </div>
+  );
 };
 
 export default Board;
