@@ -29,3 +29,14 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         fields = '__all__'
+
+
+class UserSerializer(serializers.ModelSerializer):
+    is_manager = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = User
+        fields = ['username', 'is_manager']
+    
+    def get_is_manager(self, obj):
+        return obj.groups.filter(name='Managers').exists()

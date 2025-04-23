@@ -2,35 +2,74 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { apiFetch, ENDPOINTS } from "../utils/api";
 
-// REMOVE these redundant constants - they're already defined in the api.js utility
-// const API_BASE_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
-// const API_CLOCK_ENDPOINT = `${API_BASE_URL}/api/clock/`;
-
 export default function ClockInOut() {
-  // State definitions remain the same
+  // Initialize isClockedIn from localStorage
   const [employeeName, setEmployeeName] = useState(localStorage.getItem("username") || "Guest");
-  const [isClockedIn, setIsClockedIn] = useState(false);
-  const [timestamp, setTimestamp] = useState(null);
-  const [todayHours, setTodayHours] = useState(0);
-  const [weeklyHours, setWeeklyHours] = useState(0);
+  const [isClockedIn, setIsClockedIn] = useState(localStorage.getItem("isClockedIn") === "true");
+  const [timestamp, setTimestamp] = useState(localStorage.getItem("lastClockTimestamp") || null);
+  const [todayHours, setTodayHours] = useState(parseFloat(localStorage.getItem("todayHours") || "0"));
+  const [weeklyHours, setWeeklyHours] = useState(parseFloat(localStorage.getItem("weeklyHours") || "0"));
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // useEffect hooks remain the same
-  useEffect(() => {
-    const currentUsername = localStorage.getItem("username") || "Guest";
-    if (currentUsername !== employeeName) {
-        setEmployeeName(currentUsername);
-    }
-  }, [employeeName]);
 
   useEffect(() => {
+    // Update time initially
+    setCurrentTime(new Date());
+    
+    // Set up interval to update time every second
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
+    
+    // Clean up interval on component unmount
     return () => clearInterval(timer);
   }, []);
+
+useEffect(() => {
+  const fetchClockStatus = async () => {
+    try {
+      const res = await apiFetch(`${ENDPOINTS.CLOCK}status/`);
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Clock status data:", data); // Add logging for debugging
+        
+        // Update isClockedIn state
+        setIsClockedIn(data.is_clocked_in);
+        localStorage.setItem("isClockedIn", data.is_clocked_in);
+        
+        if (data.is_clocked_in && data.current_record_id) {
+          localStorage.setItem("clockRecordId", data.current_record_id);
+        }
+        
+        // Only update hours if they're not zero
+        // This prevents resetting accumulated hours
+        if (data.today_hours !== undefined && data.today_hours > 0) {
+          setTodayHours(data.today_hours);
+          localStorage.setItem("todayHours", data.today_hours);
+        }
+        
+        if (data.weekly_hours !== undefined && data.weekly_hours > 0) {
+          setWeeklyHours(data.weekly_hours);
+          localStorage.setItem("weeklyHours", data.weekly_hours);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch clock status:", err);
+    }
+  };
+
+  const currentUsername = localStorage.getItem("username") || "Guest";
+  if (currentUsername !== employeeName) {
+    setEmployeeName(currentUsername);
+  }
+  
+  // Only fetch clock status if logged in
+  if (localStorage.getItem("logged_in") === "yes") {
+    fetchClockStatus();
+  }
+}, [employeeName]);
 
   const handleClock = async () => {
     setIsLoading(true);
@@ -42,7 +81,6 @@ export default function ClockInOut() {
     let recordId = isClockedIn ? localStorage.getItem("clockRecordId") : null;
 
     try {
-      // UPDATED: Use apiFetch utility instead of direct fetch
       const res = await apiFetch(ENDPOINTS.CLOCK, {
         method: "POST",
         body: JSON.stringify({
@@ -53,7 +91,6 @@ export default function ClockInOut() {
         }),
       });
 
-      // Rest of the function remains the same
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         if (res.status === 401) {
@@ -65,22 +102,31 @@ export default function ClockInOut() {
       }
 
       const data = await res.json();
-      setTimestamp(currentTime.toLocaleTimeString());
+      const timeString = currentTime.toLocaleTimeString();
+      setTimestamp(timeString);
+      localStorage.setItem("lastClockTimestamp", timeString);
 
       if (action === "clock_in") {
         setIsClockedIn(true);
+        localStorage.setItem("isClockedIn", "true");
         localStorage.setItem("clockRecordId", data.id);
       } else {
         setIsClockedIn(false);
+        localStorage.setItem("isClockedIn", "false");
         localStorage.removeItem("clockRecordId");
         if (data.hours !== undefined) {
           const hours = parseFloat(data.hours);
-          setTodayHours(prev => prev + hours);
-          setWeeklyHours(prev => prev + hours);
+          const newTodayHours = todayHours + hours;
+          const newWeeklyHours = weeklyHours + hours;
+          
+          setTodayHours(newTodayHours);
+          setWeeklyHours(newWeeklyHours);
+          
+          localStorage.setItem("todayHours", newTodayHours.toString());
+          localStorage.setItem("weeklyHours", newWeeklyHours.toString());
         }
       }
     } catch (err) {
-      // Error handling remains the same
       if (!error && err.message !== "Authentication failed. Please log in again.") {
         console.error("Error during clock action:", err);
         setError(err.message || "An unexpected error occurred.");
@@ -89,6 +135,7 @@ export default function ClockInOut() {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 p-4">
       <div className="max-w-6xl mx-auto">

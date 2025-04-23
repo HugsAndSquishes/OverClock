@@ -6,11 +6,11 @@ import { apiFetch, ENDPOINTS } from "../utils/api";
 const NavBar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [username, setUsername] = useState("");
+  const [isManager, setIsManager] = useState(localStorage.getItem("is_manager") === "yes");
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   useEffect(() => {
-    // Use apiFetch utility instead of direct fetch
     apiFetch(ENDPOINTS.AUTHENTICATED)
       .then((res) => {
         if (!res.ok) throw new Error("Not authenticated");
@@ -18,6 +18,8 @@ const NavBar = () => {
       })
       .then((data) => {
         setUsername(data.username);
+        setIsManager(data.is_manager);
+        localStorage.setItem("is_manager", data.is_manager ? "yes" : "no");
       })
       .catch((err) => {
         console.error(err);
@@ -52,12 +54,15 @@ const NavBar = () => {
             >
               Leaderboard
             </Link>
-            <Link
-              to="/teams"
-              className="text-gray-300 hover:text-gray-100 relative group transition-colors"
-            >
-              Team
-            </Link>
+            {/* Only show Team link if user is a manager */}
+            {isManager && (
+              <Link
+                to="/teams"
+                className="text-gray-300 hover:text-gray-100 relative group transition-colors"
+              >
+                Team
+              </Link>
+            )}
             <Link
               to="/attendancehistory"
               className="text-gray-300 hover:text-gray-100 relative group transition-colors"
@@ -95,13 +100,16 @@ const NavBar = () => {
               >
                 Leaderboard
               </Link>
-              <Link
-                to="/teams"
-                className="text-gray-300 hover:text-gray-100 transition-colors relative group"
-                onClick={toggleMenu}
-              >
-                Teams
-              </Link>
+              {/* Only show Team link if user is a manager */}
+              {isManager && (
+                <Link
+                  to="/teams"
+                  className="text-gray-300 hover:text-gray-100 transition-colors relative group"
+                  onClick={toggleMenu}
+                >
+                  Teams
+                </Link>
+              )}
               <Link
                 to="/attendancehistory"
                 className="text-gray-300 hover:text-gray-100 transition-colors relative group"

@@ -33,6 +33,8 @@ function Login({ setIsAuthenticated }) {
                 const userData = await userRes.json();
                 localStorage.setItem("username", userData.username);
                 localStorage.setItem("logged_in", "yes");
+                // Store whether the user is a manager
+                localStorage.setItem("is_manager", userData.is_manager ? "yes" : "no");
                 setIsAuthenticated(true);
                 navigate("/home", { replace: true });
             } else {
@@ -41,6 +43,7 @@ function Login({ setIsAuthenticated }) {
         } catch (err) {
             localStorage.removeItem("logged_in");
             localStorage.removeItem("username");
+            localStorage.removeItem("is_manager"); // Also remove is_manager on error
             setIsAuthenticated(false);
             setError(err.message || "Login failed. Please try again.");
         } finally {

@@ -25,19 +25,20 @@ const Home = ({ setIsAuthenticated }) => {
       alert('Logout failed');
     }
   };
-  
-  
+
   return (
-    <div>
-      <div className="flex justify-end p-4">
-        <button
-          onClick={handleLogout}
-          className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
-        >
-          Logout
-        </button>
+    <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 p-4">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex justify-end p-4">
+          <button
+            onClick={handleLogout}
+            className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors border border-gray-600 shadow-lg"
+          >
+            Logout
+          </button>
+        </div>
+        <ClockInOut />
       </div>
-      <ClockInOut />
     </div>
   );
 };
