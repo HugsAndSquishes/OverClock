@@ -5,7 +5,7 @@ const Board = () => {
   const [boardData, setBoardData] = useState([]);
   const [loading, setLoading] = useState(true);
   // Define a points multiplier - adjust this value as needed
-  const POINTS_MULTIPLIER = 1.7;
+  const POINTS_MULTIPLIER = 221.2;
 
   useEffect(() => {
     setLoading(true);
@@ -47,7 +47,7 @@ const Board = () => {
                   <div>
                     <h4 className="text-lg font-semibold text-gray-100">{user.employee_name}</h4>
                     <p className="text-gray-400">
-                      {Math.round(user.total_hours * POINTS_MULTIPLIER).toLocaleString()} points
+                      {(user.total_hours * POINTS_MULTIPLIER).toFixed(2)} points
                     </p>
                   </div>
                 </div>
