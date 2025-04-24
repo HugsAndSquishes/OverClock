@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { UserCheck, UserMinus, Clock, Calendar, Edit, Save, X } from 'lucide-react';
+import { UserCheck, UserMinus, Calendar, Edit, Save, X } from 'lucide-react';
 import { apiFetch, ENDPOINTS } from '../utils/api';
 
 export default function TeamDashboard() {
@@ -13,7 +13,7 @@ export default function TeamDashboard() {
     clock_in_time: '',
     clock_out_time: ''
   });
-  const [isManager, setIsManager] = useState(localStorage.getItem('is_manager') === 'yes');
+  const isManager = localStorage.getItem('is_manager') === 'yes';
 
   useEffect(() => {
     apiFetch(ENDPOINTS.TEAM)

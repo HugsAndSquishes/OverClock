@@ -5,6 +5,7 @@ import { apiFetch, ENDPOINTS } from "../utils/api";
 export default function ClockInOut() {
   // Initialize isClockedIn from localStorage
   const [employeeName, setEmployeeName] = useState(localStorage.getItem("username") || "Guest");
+  const [isManager, setIsManager] = useState(localStorage.getItem("is_manager") === "yes");
   const [isClockedIn, setIsClockedIn] = useState(localStorage.getItem("isClockedIn") === "true");
   const [timestamp, setTimestamp] = useState(localStorage.getItem("lastClockTimestamp") || null);
   const [todayHours, setTodayHours] = useState(parseFloat(localStorage.getItem("todayHours") || "0"));
@@ -39,6 +40,12 @@ useEffect(() => {
         setIsClockedIn(data.is_clocked_in);
         localStorage.setItem("isClockedIn", data.is_clocked_in);
         
+        // Also check if manager status has changed
+        const isManagerNow = localStorage.getItem("is_manager") === "yes";
+        if (isManagerNow !== isManager) {
+          setIsManager(isManagerNow);
+        }
+        
         if (data.is_clocked_in && data.current_record_id) {
           localStorage.setItem("clockRecordId", data.current_record_id);
         }
@@ -65,11 +72,17 @@ useEffect(() => {
     setEmployeeName(currentUsername);
   }
   
+  // Check if manager status has changed
+  const isManagerNow = localStorage.getItem("is_manager") === "yes";
+  if (isManagerNow !== isManager) {
+    setIsManager(isManagerNow);
+  }
+  
   // Only fetch clock status if logged in
   if (localStorage.getItem("logged_in") === "yes") {
     fetchClockStatus();
   }
-}, [employeeName]);
+}, [employeeName, isManager]);
 
   const handleClock = async () => {
     setIsLoading(true);
@@ -143,7 +156,9 @@ useEffect(() => {
         <header className="bg-gray-700 rounded-xl shadow-lg border border-gray-600 p-6 mb-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div>
-              <h1 className="text-2xl font-bold text-gray-100">Employee Dashboard</h1>
+              <h1 className="text-2xl font-bold text-gray-100">
+                {isManager ? "Manager Dashboard" : "Employee Dashboard"}
+              </h1>
               {/* Use state variable for display */}
               <p className="text-gray-300">Welcome, {employeeName}</p>
             </div>
@@ -160,70 +175,71 @@ useEffect(() => {
           </div>
         </header>
 
-        {/* ... rest of the component, ensure credentials: 'include' is in handleClock fetch ... */}
-         {/* Main Content */}
+        {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Clock In/Out Card */}
-          <div className="lg:col-span-2 bg-gray-700 rounded-xl shadow-lg border border-gray-600 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className={`text-xl font-bold ${
-                isClockedIn ? "text-green-400" : "text-gray-100"
-              }`}>
-                {isClockedIn ? "Currently Clocked In" : "Currently Clocked Out"}
-              </h2>
-              <div className={`px-3 py-1 rounded-full text-xs font-medium ${
-                isClockedIn ? "bg-green-900 text-green-200" : "bg-gray-600 text-gray-200"
-              }`}>
-                {isClockedIn ? "Active" : "Inactive"}
-              </div>
-            </div>
+                <div className="lg:col-span-2 bg-gray-700 rounded-xl shadow-lg border border-gray-600 p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className={`text-xl font-bold ${
+                  isClockedIn ? "text-green-400" : "text-gray-100"
+                  }`}>
+                  {isClockedIn ? "Currently Clocked In" : "Currently Clocked Out"}
+                  </h2>
+                  <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  isClockedIn ? "bg-green-900 text-green-200" : "bg-gray-600 text-gray-200"
+                  }`}>
+                  {isClockedIn ? "Active" : "Inactive"}
+                  </div>
+                </div>
 
-            <div className="flex flex-col items-center">
-              <div className="relative w-40 h-40 rounded-full border-4 border-gray-600 mb-6 flex items-center justify-center">
-                <motion.div
-                  animate={{ scale: isClockedIn ? [1, 1.05, 1] : 1 }}
-                  transition={{ duration: 2, repeat: isClockedIn ? Infinity : 0 }}
-                  className={`w-full h-full rounded-full flex items-center justify-center text-5xl ${
+                <div className="flex flex-col items-center">
+                  <div className="relative w-40 h-40 rounded-full border-4 border-gray-600 mb-6 flex items-center justify-center">
+                  <motion.div
+                    animate={{ scale: isClockedIn ? [1, 1.05, 1] : 1 }}
+                    transition={{ duration: 2, repeat: isClockedIn ? Infinity : 0 }}
+                    className={`w-full h-full rounded-full flex items-center justify-center ${
                     isClockedIn ? "bg-green-900/20" : "bg-gray-600/20"
-                  }`}
-                >
-                  {isClockedIn ? "🟢" : "⚪"}
-                </motion.div>
-              </div>
+                    }`}
+                  >
+                    <span className="text-8xl transform scale-150">
+                    {isClockedIn ? "🟢" : "⚪"}
+                    </span>
+                  </motion.div>
+                  </div>
 
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleClock}
-                disabled={isLoading}
-                className={`w-full max-w-xs py-4 px-6 text-lg font-semibold rounded-xl transition-all duration-300 ${
-                  isLoading
+                  <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleClock}
+                  disabled={isLoading}
+                  className={`w-full max-w-xs py-4 px-6 text-lg font-semibold rounded-xl transition-all duration-300 ${
+                    isLoading
                     ? "bg-gray-600 text-gray-300 cursor-not-allowed"
                     : isClockedIn
                     ? "bg-red-600 hover:bg-red-700 text-white"
                     : "bg-green-600 hover:bg-green-700 text-white"
-                }`}
-              >
-                {isLoading ? (
-                  <span className="flex items-center justify-center">
+                  }`}
+                  >
+                  {isLoading ? (
+                    <span className="flex items-center justify-center">
                     <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                     Processing...
-                  </span>
-                ) : isClockedIn ? "Clock Out" : "Clock In"}
-              </motion.button>
+                    </span>
+                  ) : isClockedIn ? "Clock Out" : "Clock In"}
+                  </motion.button>
 
-              {timestamp && (
-                <p className="mt-4 text-gray-300 text-sm">
-                  Last action: {timestamp}
-                </p>
-              )}
-            </div>
-          </div>
+                  {timestamp && (
+                  <p className="mt-4 text-gray-300 text-sm">
+                    Last action: {timestamp}
+                  </p>
+                  )}
+                </div>
+                </div>
 
-          {/* Stats Sidebar */}
+                {/* Stats Sidebar */}
           <div className="space-y-6">
             {/* Today's Hours Card */}
             <div className="bg-gray-700 rounded-xl shadow-lg border border-gray-600 p-6">

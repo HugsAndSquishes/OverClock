@@ -58,24 +58,32 @@ function Login({ setIsAuthenticated }) {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-800 to-gray-900 p-4 flex items-center justify-center">
             <div className="w-full max-w-md">
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                     className="bg-gray-700 rounded-xl shadow-lg border border-gray-600 overflow-hidden"
                 >
-                    <div className="px-8 py-10">
-                        {/* Logo Header */}
+                    <div className="px-10 py-10">
                         <div className="text-center mb-8">
                             <motion.div
-                                animate={{ scale: isLogoAnimating ? [1, 1.1, 1] : 1 }}
-                                transition={{ duration: 1 }}
+                                animate={{
+                                    scale: isLogoAnimating ? [0.8, 1.2, 0.8] : 1,
+                                    y: isLogoAnimating ? [0, -10, 0] : 0,
+                                    rotate: isLogoAnimating ? [-5, 0, 5, 0] : 0
+                                }}
+                                transition={{
+                                    duration: 4,
+                                    repeat: isLogoAnimating ? Infinity : 0,
+                                    repeatType: "mirror",
+                                    ease: "easeInOut"
+                                }}
                                 className="inline-block mb-4"
                             >
-                                <img 
-                                    src="/favicon.ico" 
-                                    alt="Company Logo" 
-                                    className="h-16 w-16 mx-auto rounded-lg border border-gray-500"
+                                <img
+                                    src="/favicon.ico"
+                                    alt="Company Logo"
+                                    className="h-40 w-40 mx-auto rounded-lg"
                                 />
                             </motion.div>
                             <h1 className="text-2xl font-bold text-gray-100">Welcome Back</h1>
@@ -120,7 +128,7 @@ function Login({ setIsAuthenticated }) {
                                 <div className="flex justify-between mb-2">
                                     <label htmlFor="password" className="block text-sm font-medium text-gray-300">
                                         Password
-                                    </label>                                
+                                    </label>
                                 </div>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-500">
@@ -145,11 +153,10 @@ function Login({ setIsAuthenticated }) {
                                 whileTap={{ scale: 0.98 }}
                                 type="submit"
                                 disabled={isLoading}
-                                className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all ${
-                                    isLoading
-                                        ? "bg-blue-700 cursor-not-allowed"
-                                        : "bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                }`}
+                                className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all ${isLoading
+                                    ? "bg-blue-700 cursor-not-allowed"
+                                    : "bg-blue-600 hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                    }`}
                             >
                                 {isLoading ? (
                                     <span className="flex items-center justify-center">
